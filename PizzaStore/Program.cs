@@ -29,3 +29,5 @@ app.MapPut("/pizzas", (Pizza pizza) => PizzaDB.UpdatePizza(pizza));
 app.MapDelete("/pizzas/{id}", (int id) => PizzaDB.RemovePizza(id));
 
 app.Run();
+
+public partial class Program { }
