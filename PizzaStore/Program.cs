@@ -11,9 +11,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Change configurations based on environmental settings
-// HINT: See Project Properties --> Debug --> Launch Profiles --> Select
-// Add ASPNETCORE_ENVIRONMENT = "Development"
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
