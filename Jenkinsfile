@@ -5,6 +5,11 @@ pipeline {
     parameters {
         string(name: 'PORT', defaultValue: '8081')
     }
+
+    environment {
+        CR = "cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
+        IMAGE = 'pizza-store'
+    }
     
     stages {
         
@@ -62,10 +67,10 @@ pipeline {
             steps {
                 echo '=== Stage 4: Deploy ==='
                 sh """ 
-                    docker build -t my-web-api .
-                    docker stop my-web-api || true
-                    docker rm my-web-api || true
-                    docker run -d --name my-web-api -p ${params.PORT}:8080 my-web-api
+                    docker build -t pizza-store .
+                    docker stop pizza-store || true
+                    docker rm pizza-store || true
+                    docker run -d --name pizza-store -p ${params.PORT}:8080 pizza-store
                 """
                 
                 echo 'The App is ready'
@@ -88,6 +93,25 @@ pipeline {
                     echo "App did not become ready in time"
                     exit 1
                 """
+            }
+        }
+
+        stage('Push image') {
+            steps {
+                withCredentials([file(credentialsId: 'yc-cr-json', variable: 'YC_KEY_FILE')]) {
+                    sh ```
+                        set +x
+                        docker loging --username json_key --password-stdin cr.yandex < "$YC_KEY_FILE"
+                    ```
+                }
+
+                sh ```
+                    docker build -t "$IMAGE:$BUILD_NUMBER" .
+                    docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:$BUILD_NUMBER"
+                    docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:latest"
+                    docker push "$CR/$IMAGE:$BUILD_NUMBER"
+                    docker push "$CR/$IMAGE:latest"
+                ```
             }
         }
     }
