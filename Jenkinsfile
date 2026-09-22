@@ -7,7 +7,6 @@ pipeline {
     }
 
     environment {
-        CR = "cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
         IMAGE = 'pizza-store'
     }
     
@@ -106,6 +105,7 @@ pipeline {
                 }
 
                 sh ```
+                    CR="cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
                     docker build -t "$IMAGE:$BUILD_NUMBER" .
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:$BUILD_NUMBER"
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:latest"
