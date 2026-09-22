@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         IMAGE = 'pizza-store'
+        BUILDX_NO_DEFAULT_ATTESTATIONS = '1'
     }
     
     stages {
