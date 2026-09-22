@@ -97,21 +97,16 @@ pipeline {
 
         stage('Push image') {
             steps {
-                withCredentials([file(credentialsId: 'yc-cr-json', variable: 'YC_KEY_FILE')]) {
-                    sh ```
-                        set +x
-                        docker loging --username json_key --password-stdin cr.yandex < "$YC_KEY_FILE"
-                    ```
-                }
-
-                sh ```
+                sh '''
+                    set +x
+                    docker login --username json_key --password-stdin cr.yandex < /var/lib/jenkins/secrets/yc-cr.json
                     CR="cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
                     docker build -t "$IMAGE:$BUILD_NUMBER" .
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:$BUILD_NUMBER"
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:latest"
                     docker push "$CR/$IMAGE:$BUILD_NUMBER"
                     docker push "$CR/$IMAGE:latest"
-                ```
+                '''
             }
         }
     }
