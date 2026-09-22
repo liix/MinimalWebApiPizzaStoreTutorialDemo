@@ -66,10 +66,10 @@ pipeline {
             steps {
                 echo '=== Stage 4: Deploy ==='
                 sh """ 
-                    docker build -t pizza-store .
-                    docker stop pizza-store || true
+                    docker ps -q --filter publish=${params.PORT} | xargs -r docker stop
                     docker rm pizza-store || true
-                    docker run -d --name pizza-store -p ${params.PORT}:8080 pizza-store
+                    docker build -t \$IMAGE:\$BUILD_NUMBER .
+                    docker run -d --name pizza-store -p ${params.PORT}:8080 \$IMAGE:\$BUILD_NUMBER
                 """
                 
                 echo 'The App is ready'
@@ -101,7 +101,6 @@ pipeline {
                     set +x
                     docker login --username json_key --password-stdin cr.yandex < /var/lib/jenkins/secrets/yc-cr.json
                     CR="cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
-                    docker build -t "$IMAGE:$BUILD_NUMBER" .
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:$BUILD_NUMBER"
                     docker tag "$IMAGE:$BUILD_NUMBER" "$CR/$IMAGE:latest"
                     docker push "$CR/$IMAGE:$BUILD_NUMBER"
