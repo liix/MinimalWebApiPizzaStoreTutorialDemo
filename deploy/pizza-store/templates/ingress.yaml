@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "pizza-store.fullname" . }}
+  labels:
+    {{- include "pizza-store.labels" . | nindent 4 }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "pizza-store.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
