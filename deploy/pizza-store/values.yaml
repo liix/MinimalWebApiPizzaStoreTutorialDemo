@@ -1,10 +1,15 @@
 replicaCount: 1
 
 image:
-  repository: diploma-app
+  repository: pizza-store
   tag: "latest"
   pullPolicy: IfNotPresent
 
+imagePullSecrets:
+  - name: ycr-secret
+
+containerPort: 8080
+
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80

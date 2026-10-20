@@ -109,6 +109,20 @@ pipeline {
                 '''
             }
         }
+
+        stage('Deploy to k3s') {
+            steps {
+                sh '''
+                    CR="cr.yandex/$(cat /var/lib/jenkins/secrets/yc-registry-id)"
+                    helm upgrade --install pizza-store ./deploy/pizza-store \
+                        --kubeconfig /var/lib/jenkins/.kube/config \
+                        --set image.repository="$CR/$IMAGE" \
+                        --set-string image.tag="$BUILD_NUMBER" \
+                        --wait \
+                        --timeout 5m
+                '''
+            }
+        }
     }
 
     post {
