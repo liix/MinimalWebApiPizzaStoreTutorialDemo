@@ -131,16 +131,17 @@ pipeline {
     post {
         always {
             echo 'Cleaning...'
-            sh """
-                set +x
-                TOKEN=\$(cat /var/lib/jenkins/secrets/telegram-bot-token)
-                CHAT=\$(cat /var/lib/jenkins/secrets/telegram-chat-id)
-                TEXT="pizza-app #${env.BUILD_NUMBER}: ${currentBuild.currentResult}
-${env.BUILD_URL}"
-                curl -fsS -X POST "https://api.telegram.org/bot\${TOKEN}/sendMessage" \\
-                    --data-urlencode "chat_id=\${CHAT}" \\
-                    --data-urlencode "text=\${TEXT}" || echo "Telegram notification failed"
-            """
+            script {
+                try {
+                    mail to: env.MAIL_TO,
+                         from: env.MAIL_FROM,
+                         subject: "pizza-app #${env.BUILD_NUMBER}: ${currentBuild.currentResult}",
+                         body: """pizza-app #${env.BUILD_NUMBER}: ${currentBuild.currentResult}
+${env.BUILD_URL}"""
+                } catch (err) {
+                    echo "Email notification failed: ${err.message}"
+                }
+            }
         }
         success {
             echo 'Pipeline finished successfully'
