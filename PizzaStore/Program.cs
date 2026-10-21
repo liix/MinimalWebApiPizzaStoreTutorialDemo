@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using PizzaStore.DB;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+var metricsPort = int.Parse(builder.Configuration["METRICS_PORT"] ?? "8081");
+var metricServer = new KestrelMetricServer(metricsPort);
+metricServer.Start();
+app.Lifetime.ApplicationStopping.Register(metricServer.Dispose);
+
+app.UseHttpMetrics();
 
 if (app.Environment.IsDevelopment())
 {

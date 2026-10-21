@@ -13,3 +13,7 @@ containerPort: 8080
 service:
   type: ClusterIP
   port: 80
+
+metrics:
+  port: 8081
+  prometheusRelease: monitoring

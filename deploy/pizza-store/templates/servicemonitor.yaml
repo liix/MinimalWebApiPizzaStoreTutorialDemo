@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pizza-store.fullname" . }}
+  labels:
+    {{- include "pizza-store.labels" . | nindent 4 }}
+    release: {{ .Values.metrics.prometheusRelease }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pizza-store.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /metrics
