@@ -1,6 +1,9 @@
 pipeline {
     agent any
-    triggers { pollSCM('H/5 * * * *') }
+    triggers {
+        pollSCM('H/5 * * * *')
+        githubPush()
+    }
 
     parameters {
         string(name: 'PORT', defaultValue: '8081')
