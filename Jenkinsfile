@@ -33,6 +33,9 @@ pipeline {
         stage ('Quality and Testing'){
             parallel {
                 stage('Tests') {
+                    environment {
+                        METRICS_PORT = '8082'
+                    }
                     steps {
                         echo '=== Stage 3: Tests ==='
                         sh '''
