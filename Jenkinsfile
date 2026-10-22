@@ -140,7 +140,7 @@ pipeline {
                          from: env.MAIL_FROM,
                          subject: "pizza-app #${env.BUILD_NUMBER}: ${currentBuild.currentResult}",
                          body: """pizza-app #${env.BUILD_NUMBER}: ${currentBuild.currentResult}
-${env.BUILD_URL}"""
+${currentBuild.absoluteUrl}"""
                 } catch (err) {
                     echo "Email notification failed: ${err.message}"
                 }
